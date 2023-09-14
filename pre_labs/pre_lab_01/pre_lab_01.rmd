@@ -237,7 +237,7 @@ No code here; I want you to provide three questions that this data suggests to y
 
 **Answer**
 
-1.   First of all I would ask if this data includes classes that do not run, considering there were multiple that ran with a minimum seat number of zero, which confused me.
+1.  First of all I would ask if this data includes classes that do not run, considering there were multiple that ran with a minimum seat number of zero, which confused me.
 
 2.  I'm also a bit curious between the seat discrepancy between classes. It seems to me like there is a very wide range between the average and median amount of seats in the classes.
 
