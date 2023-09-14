@@ -173,7 +173,7 @@ umd_courses |>
 
 Compared to the previous codeblock, how did the output change and what in the code changed it?
 
-**Answer**
+**Answer: This output is also sorting by the department of each class (Arabic, English, etc.) in addition to already sorting by the term, so there will be multiple of each term with different departments, and multiple of each department in different terms. It then says the amount of classes in the department for that term. The change occurred in the line "group_by(term, department)" where the department modifier was added.**
 
 ### Task 12: Other summary functions
 
@@ -189,7 +189,7 @@ umd_courses |>
   arrange(desc(total_seats))
 ```
 
-Compared to the previous codeblock, what has changed and how did that affect the result? **Answer**
+Compared to the previous codeblock, what has changed and how did that affect the result? **Answer: This block returned to just sorting by term rather than term and department and added "total_seats = sum(seats)," which added all the seats together from each of the classes that term and displayed them in a new column. It also placed the rows in descending order of the number of total seats.**
 
 ### Task 13: different kinds of summarizations
 
@@ -207,7 +207,7 @@ umd_courses |>
   arrange(desc(total_seats))
 ```
 
-Compared to the previous codeblock, what has changed and how did that affect the result? What do the top terms have in common? **Answer**
+Compared to the previous codeblock, what has changed and how did that affect the result? What do the top terms have in common? **Answer: This chunk is fairly similar to the previous one, but added a row averaging out the amount of seats in the classes for each term and a row for the median seats in classes for each term. This was done using "mean_seats = mean(seats)" and "median_seats = median(seats)."**
 
 ### Task 14: more aggregations
 
@@ -221,15 +221,15 @@ umd_courses |>
     total_seats = sum(seats),
     mean_seats = mean(seats),
     median_seats = median(seats),
-    # add minimum seats here
-    # add maximum seats here
+    min_seats = min(seats),
+    max_seats = max(seats),
   ) |>
   arrange(desc(total_seats))
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? How is the data sorted?
 
-**Answer**
+**Answer: This time I changed the code by adding in a function to find the minimum amount of seats in a class for the term and a maximum amount of seats in a class for the term. The data is again sorted in descending order of the number of total seats.**
 
 ### Task 12: Questions
 
@@ -237,8 +237,8 @@ No code here; I want you to provide three questions that this data suggests to y
 
 **Answer**
 
-1.  
+1.   First of all I would ask if this data includes classes that do not run, considering there were multiple that ran with a minimum seat number of zero, which confused me.
 
-2.  
+2.  I'm also a bit curious between the seat discrepancy between classes. It seems to me like there is a very wide range between the average and median amount of seats in the classes.
 
-3.  
+3.  I'm unsure why so few classes have absolutely no syllabus on file and would be interested to look into that.
