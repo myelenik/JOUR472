@@ -40,113 +40,138 @@ Most questions have a code block and a space for an answer below. Write the code
 
 #### **Q1** Do you notice anything different with this read_csv()? Particularly in the file name?
 
-**A1:**
+**A1: It starts with "<https://>", making it look like a website.**
 
 ------------------------------------------------------------------------
 
 #### **Q2** How many records there are there in this dataset? What do they mean and what useful information we can gather from it, looking at the columns?
 
-**A2:**
+**A2: There are 9,975 rows (or earthquakes) in this dataset, ranging from Sept. to Oct. of 2023. It can help us learn more about where earthquakes are occurring, the frequency, magnitude, depth, etc.**
 
 ------------------------------------------------------------------------
 
 #### **Q3** How do I reorganize this list to see the ones that are the deepest first? What is the depth that shows up for the deepest one, and its magnitude?
 
 ```{r}
-
+earthquakes |>
+  arrange(desc(depth))
 ```
 
-**A3:**
+**A3: The deepest one was at a depth of 669.98, with a magnitude of 4.2.**
 
 ------------------------------------------------------------------------
 
 #### **Q4** I just want to see the earthquakes with a magnitude larger than 6. How do I do that? And how many are there that fit this criteria?
 
 ```{r}
-
+earthquakes |>
+  filter(mag > 6)
 ```
 
-**A4:**
+**A4: There are 12 earthquakes that have a magnitude larger than 6.**
 
 ------------------------------------------------------------------------
 
 #### **Q5** What about if I want to see earthquakes that have both a magnitude larger than 6 and a depth smaller than 20? How many are there in the data set that fit [both]{.underline} these criteria?
 
 ```{r}
-
+earthquakes |>
+  filter(mag > 6 & depth < 20)
 ```
 
-**A5:**
+**A5: There are 5 that fit this criteria.**
 
 ------------------------------------------------------------------------
 
 #### **Q6** What about if I want to see earthquakes that either have a magnitude larger than 6 and a depth smaller than 20? How many are there in the data set that fit [either]{.underline} these criteria?
 
 ```{r}
-
+earthquakes |>
+  filter(mag > 6 | depth < 20)
 ```
 
-**A6:**
+**A6: There are 7,412 that fit the criteria.**
 
 ------------------------------------------------------------------------
 
 #### **Q7** I'm interested in finding earthquakes that took place in Alaska. Which column should I look at? How do I use it to find all the earthquakes in Alaska? How many earthquakes took place there?
 
 ```{r}
-
+earthquakes |>
+  filter(str_detect(place, "Alaska"))
 ```
 
-**A7:**
+**A7: 3,427 took place in Alaska.**
 
 ------------------------------------------------------------------------
 
 #### **Q8** I notice that there is a column called 'type', that seems to have different kinds of tremors. What is the best way to find what are all the possible types of tremors, and counting how many of each there are in this data set? What are the first two most common types of tremors in this data set?
 
 ```{r}
-
+earthquakes |>
+  group_by(type) |>
+  summarise(
+    n()
+  )
 ```
 
-**A8:**
+**A8: Earthquake is the most common, followed by quarry blasts.**
 
 ------------------------------------------------------------------------
 
 #### **Q9** How do I calculate the average depth of each type of tremor? What is the average depth of the earthquake type in this data set? Is there anything that seems unusual or surprising in this finding?
 
 ```{r}
-
+earthquakes |>
+  group_by(type) |>
+  summarise(
+    mean_depth = mean(depth),
+  ) |>
+  arrange(desc(mean_depth))
 ```
 
-**A9:**
+**A9: The average depth of earthquakes is 25.28. It is a little shocking to see the mean depth is 00.00 for ice quakes.**
 
 ------------------------------------------------------------------------
 
 #### **Q10** I'm interested, in the future, to see the hours in which earthquakes happen. How can I extract the hour from the time column?
 
 ```{r}
-
+earthquakes |>
+  mutate(hour=hour(time))
 ```
 
-**A10:**
+**A10: I mutated a new column by selecting the hour out of the time using a lubridate function.**
 
 ------------------------------------------------------------------------
 
 #### **Q11** I want to make a note of all the records in this data set that I consider serious. For my purposes, I'm thinking that all tremors that have a magnitude that is larger than 3 are serious. How do I automatically create a new column making that distinction?
 
 ```{r}
-
+earthquakes <- earthquakes |>
+  mutate(serious = case_when(
+    mag > 3 ~ 'Serious',
+    .default = 'Not serious'
+  ))
 ```
 
-**A11:**
+**A11: Used mutate to make a new column which will return "serious" or "not serious" depending on the magnitude.**
 
 ------------------------------------------------------------------------
 
 #### **Q12** I have no idea how earthquakes work and I'm interested in seeing if there is a particular time of day in which serious earthquakes happen. How can I see that condensed in a table with all the hours in a day and all the serious earthquakes in each hour? What is the hour with fewer serious earthquakes and the one with the most serious earthquakes?
 
 ```{r}
-
+earthquakes |>
+  filter(serious == 'Serious' & type == 'earthquake') |>
+  group_by(hour) |>
+  summarize(
+    count = n()
+  ) |>
+  arrange(desc(count))
 ```
 
-**A12**:
+**A12**: Hour 2 had the most amount of serious earthquakes, while 17 had the least.
 
 ------------------------------------------------------------------------
 

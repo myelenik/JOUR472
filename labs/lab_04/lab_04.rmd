@@ -22,6 +22,9 @@ You'll need to load three packages for this: the tidyverse, lubridate and janito
 **Task** load these three packages.
 
 ```{r}
+library(tidyverse)
+library(janitor)
+library(lubridate)
 # Turn off scientific notation
 options(scipen=999)
 
@@ -43,6 +46,9 @@ You'll need to load one data set, a CSV file of Maryland campaign expenditures l
 
 ```{r}
 # Load the Maryland expenditures data table, clean the column names and convert columns with dates into actual dates.
+maryland_expenses <- read_csv("data/maryland_expenses.csv") |>
+  clean_names()
+  mutate(time = as_datetime(time))
 ```
 
 ## Answer questions
