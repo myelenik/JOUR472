@@ -1,0 +1,138 @@
+---
+title: "Reverse Engineering Project"
+author: "Kenan Grier, Marissa Yelenik, Matthew Kiras, Nicholas Wolcott"
+date: "Date here"
+output:
+  html_document:
+    theme: cerulean
+    highlight: pygments
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+In this notebook, we are reverse engineering the story, Thousands of kids are missing from school. Where did they go? (<https://projects.apnews.com/features/2023/missing-children/index.html>)
+
+## Load libraries
+
+Loading required libraries for this analysis.
+
+```{r echo=FALSE, message=FALSE}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+
+```
+
+## Load and Cleaning Data
+
+In this section, describe the source of the data, write a basic data dictionary for data you are working with, and discuss any caveats or issues you discovered working with this data.
+
+```{r}
+# Load required data
+
+population_by_age <- read.csv('data/population-by-age.csv') |>
+  clean_names()
+private_enrollment_by_grade <- read.csv('data/private-enrollment-by-grade.csv') |>
+  clean_names()
+public_enrollment_by_grade <- read.csv('data/public-enrollment-by-grade.csv') |>
+  clean_names() |>
+  
+missing_kids_analysis <- read.csv('data/Missing-Kids-Analysis.csv') |>
+  clean_names()
+school_aged_population_changes <- read.csv('data/School-Aged-Population-Changes.csv') |>
+  clean_names()
+enrollment_changes <- read.csv('data/Enrollment-Changes.csv') |>
+  clean_names()
+
+
+
+# Path to data should be loaded from folder "data" i.e. read_csv("data/name_of_data.csv")
+
+# Clean required data and prepare for analysis if needed. 
+
+
+```
+
+## Sentences to Engineer
+
+In this notebook, we are reverse engineering five sentences from the story.
+
+### Sentence 1
+
+-   **Sentence text**: "Those states saw private-school enrollment grow by over 100,000 students" from 2019-2020 to 2021-2022
+-   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+private_enrollment_by_grade |>
+  group_by(state) |>
+  summarise(
+    amt_change = 
+    ) |>
+  mutate(
+    
+  )
+  arrange(desc(amt_change))
+
+  
+# Display results of code below this codeblock
+
+```
+
+### Sentence 2
+
+-   **Sentence text**: [Paste in sentence to engineer here]
+-   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+
+# Display results of code below this codeblock
+
+```
+
+### Sentence 3
+
+-   **Sentence text**: [Paste in sentence to engineer here]
+-   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+
+# Display results of code below this codeblock
+
+```
+
+### Sentence 4
+
+-   **Sentence text**: [Paste in sentence to engineer here]
+-   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+
+# Display results of code below this codeblock
+
+```
+
+### Sentence 5
+
+-   **Sentence text**: [Paste in sentence to engineer here]
+-   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+
+```{r}
+# Put code to reverse engineer sentence here
+
+# Display results of code below this codeblock
+
+```
+
+-30-
