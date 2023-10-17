@@ -54,7 +54,7 @@ baltimore_county <- read_csv("tabula-baltimore_county.csv", col_names = FALSE) |
 
 Q1. Write code to generate the number of calls that occurred on each date. Which date in 2022 had the most overdose calls, and how many? Look at the total number of rows in your result and explore the range of dates - based on your result, do you believe there are any days with no overdose calls at all? Explain why or why not.
 
-A1.
+**A1. This data does not appear to support the idea that there are days with no overdose calls, given that there are 366 rows for one year. However, I am confused about why it says 366 instead of 365.**
 
 ```{r}
 baltimore_county |>
@@ -67,7 +67,7 @@ baltimore_county |>
 
 Q2. You want to understand if there's a pattern in the day of the week that overdose calls are made. Add a column to your dataframe that displays what day of the week each date represents. You should search for how to do that using lubridate. Then write code to calculate the number of calls for each day of the week, and add a column to that result that calculates the percentage of all calls that occurred on each day of the week (so you want a dataframe with the day of the week, total number of calls and the percentage of calls on that day out of the total number of all calls). Describe your findings to me.
 
-A2.
+**A2. This shows that the majority of calls happen on the weekend/Monday, and they decrease during weekdays (Tues-Fri).**
 
 ```{r}
 baltimore_county <- baltimore_county |>
@@ -83,12 +83,16 @@ baltimore_county |>
 
 Q3. Now let's look at locations. Which ones have the most calls? How would you describe them (feel free to search for more information on them)? Is there anything about the structure of the original data that might make you less confident in the counts by location or date?
 
-A3.
+**A3. I did notice that of the first three, two of them are police departments. This skews the data a bit as they were taken to the department rather than coming from it. The syntax of the data does give me pause as some addresses are not full addresses, while other could be written differently.**
 
 ```{r}
+baltimore_county |>
+  group_by(location) |>
+  summarise(count = n()) |>
+  arrange(desc(count))
 
 ```
 
 Q4. What's the best story idea or question you've seen as a result of the work you've done in this lab?
 
-A4.
+**A4. I would want to figure out what is going on with 4540 Silver Spring Road and why it has almost triple the amount of overdoses the second most frequent address does.**
