@@ -111,8 +111,17 @@ baltimore_911_with_demographics |>
 
 ### Q4. Choose your own adventure: I want you to come up with a question you could ask of the Baltimore City data that combines both the calls and the demographic information. You must use both demographics and the overdose call data in your work.
 
-A4:
+A4: I decided to ask what neighborhoods the older groups (over 15% of 65+) lived in and how many calls occurred in these neighborhoods, and then compared that by finding the descending count by neighborhood overall as well.
 
 ```{r}
+baltimore_911_with_demographics |>
+  filter(pct_pop_65 >= 15) |>
+  group_by(pct_pop_65, neighborhood) |>
+  summarise(count = n()) |>
+  arrange(desc(count))
 
+baltimore_911_with_demographics |>
+  group_by(pct_pop_65, neighborhood) |>
+  summarise(count = n()) |>
+  arrange(desc(count))
 ```
