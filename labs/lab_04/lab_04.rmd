@@ -35,7 +35,7 @@ For this lab, we want to investigate spending by Maryland state and local candid
 The basic process here is to start in RStudio, export data so that we can use OpenRefine to clean it up, and then bring it back into RStudio to finish our analysis. The function to export data from RStudio is called `write_csv()` and it takes two arguments: the name of the dataframe and the path of the file to write it to, which is in quotes. Like `read_csv()`, but the variable name comes inside. Here's an example, in which you'd replace the dataframe and the path values.
 
 ```{r}
-write_csv(dataframe, "folder/file.csv")
+# write_csv(dataframe, "folder/file.csv")
 ```
 
 ## Load Data
@@ -47,8 +47,9 @@ You'll need to load one data set, a CSV file of Maryland campaign expenditures l
 ```{r}
 # Load the Maryland expenditures data table, clean the column names and convert columns with dates into actual dates.
 maryland_expenses <- read_csv("data/maryland_expenses.csv") |>
-  clean_names()
-  mutate(time = as_datetime(time))
+  clean_names() |>
+  mutate(date = mdy(expenditure_date))
+#I could not figure out how to do this with datetime, but I think my method (nonefficiently) worked
 ```
 
 ## Answer questions
@@ -64,19 +65,22 @@ Then, using that `payee_clean` column, write code to find all of the spending wh
 ```{r}
 # One step at a time. Find the category column in the data that has values for different kinds of spending.
 
-
+#expense_category
 ```
 
 ```{r}
 # One of them is "Media". Write code to isolate Media expenses where the name of the payee is not NA. They key here is using (!is.na(payee_name)) within a function
 
+media_expenses <- maryland_expenses |>
+  filter(expense_category == 'Media') |>
+  filter(!is.na(payee_name))
 
 ```
 
 ```{r}
 # Export this table as a CSV
 
-
+write_csv(media_expenses, "data/media_expenses.csv")
 
 
 # Clean up work in OpenRefine
