@@ -107,7 +107,11 @@ media_expenses_cleaned |>
 **A3. I did not notice any contributions for Wes Moore or Tom Perez. I cannot see if the ads were run because of the Facebook block. The biggest recipient would be Peter Franchot, who has two committees.**
 
 ```{r}
-
+wes_moore_expenses <- media_expenses_cleaned |>
+  filter(committee_name == "Moore  Wes for Maryland" | committee_name == "Moore Miller for Maryland Slate") |>
+  group_by(payee_clean) |>
+  summarize(total_amount = sum(amount)) |>
+  arrange(desc(total_amount))
 ```
 
 **Q4.** The media expense data you cleaned also has a standardized purpose column. Write code to generate a list of the committees with the total amount of spending on online advertising. How does this list compare to the one from Q1 about top Facebook spenders? Of the top 5 committees who spent the most on Facebook ads from Q1, are there any that appear to have spent *all* of their online advertising dollars on Facebook?
