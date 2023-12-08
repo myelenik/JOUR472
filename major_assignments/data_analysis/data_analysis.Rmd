@@ -24,7 +24,10 @@ Loading required libraries for this analysis.
 library(tidyverse)
 library(janitor)
 library(lubridate)
+library(tidycensus)
 options(scipen=999)
+
+#census_api_key("3d9b2681cdc657c56959c2942ed8002ce5a84cf1", install=TRUE)
 ```
 
 ## Load and Cleaning Data
@@ -33,33 +36,28 @@ In this section, describe the source of the data, write a basic data dictionary 
 
 ```{r}
 
-md_state_payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv") |> clean_names()
+md_payments <- read_csv("data/State_of_Maryland_Payments_Data__FY2008_to_FY2024.csv") |> clean_names()
 
+md_census <- get_acs(geography = "zcta", variables = 'B01002_001', state = 'MD', year = 2019)
 
 ```
 
 ### Limitations
 
-rows:
+The data frame has 430584 rows and 8 columns
 
-columns:
-
-limitations: what is an industry
-
-code: categories? industry
-
-no problems on timeframe
+One limitation is that it might be difficult to define each industry just based on agency, and we do not know what each code in the category column means or stands for. In terms of timeframe, we do not have limitations as our data spans from 2008 to 2024.
 
 ### Question 1: How does the distribution of spending change from year to year?
 
 ```{r}
 
-md_state_payments_by_year <- md_state_payments |>
+md_payments_by_year <- md_payments |>
   group_by(fiscal_year) |>
   summarise(total = sum(amount)) |>
   arrange(desc(total))
 
-md_state_payments_by_year |>
+md_payments_by_year |>
   ggplot() +
   geom_bar(aes(x=reorder(fiscal_year,total), weight=total)) +
   coord_flip() +
@@ -71,102 +69,133 @@ md_state_payments_by_year |>
 
 ```
 
+### Question 2: Which industries spent the most money
+
 ```{r}
-# Put code to reverse engineer sentence here
+#Health
+industry_data_health <- md_payments |>
+  filter(str_detect(agency_name, "HEALTH")) |>
+  group_by(fiscal_year) |>
+  summarise(total_health = sum(amount))
 
+md_payments |>
+  filter(str_detect(agency_name, "HEALTH")) |>
+  count(agency_name)
 
-private_enrollment_by_grade |>
-  mutate(
-    term = case_when(
-      str_detect(sch_year, "2019-2020") ~ "2019",
-      str_detect(sch_year, "2020-2021") ~ "2020",
-      str_detect(sch_year, "2021-2022") ~ "2021",
-      .default = NA
-    )) |>
-  filter(enrollment_type == 'Private enrollment') |>
-  group_by(state, term) |>
-  summarise( state_enrollment= sum(enrollment)) 
+#Education
+industry_data_education <- md_payments |>
+  filter(str_detect(agency_name, "EDUCATION") | str_detect(agency_name, "SCHOOL")) |>
+  group_by(fiscal_year) |>
+  summarise(total_education = sum(amount))
 
+md_payments |>
+  filter(str_detect(agency_name, "EDUCATION") | str_detect(agency_name, "SCHOOL")) |>
+  count(agency_name)
 
-# |>
-filter(enrollment_type == 'Private enrollment') |>
-#  mutate(total_private_change = sum('2021') - sum('2019')) |> 
-#  summarize(sum(total_private_change))
-  
+#Housing
+industry_data_housing <- md_payments |>
+  filter(str_detect(agency_name, "HOUSING")) |>
+  group_by(fiscal_year) |>
+  summarise(total_housing = sum(amount))
 
-  
-# Display results of code below this codeblock
+md_payments |>
+  filter(str_detect(agency_name, "HOUSING")) |>
+  count(agency_name)
+
+#Crime
+industry_data_crime <- md_payments |>
+  filter(str_detect(agency_name, "POLICE") | str_detect(agency_name, "CRIME") | str_detect(agency_name, "SAFETY")) |>
+  group_by(fiscal_year) |>
+  summarise(total_crime = sum(amount))
+
+md_payments |>
+  filter(str_detect(agency_name, "POLICE") | str_detect(agency_name, "CRIME") | str_detect(agency_name, "SAFETY")) |>
+  count(agency_name)
+
+#Labor
+industry_data_labor <- md_payments |>
+  filter(str_detect(agency_name, "LABOR")) |>
+  group_by(fiscal_year) |>
+  summarise(total_labor = sum(amount))
+
+md_payments |>
+  filter(str_detect(agency_name, "LABOR")) |>
+  count(agency_name)
+
+#Environment
+industry_data_environment <- md_payments |>
+  filter(str_detect(agency_name, "ENVIRONMENT") | str_detect(agency_name, "AGRICULTURE")) |>
+  group_by(fiscal_year) |>
+  summarise(total_environment = sum(amount))
+
+md_payments |>
+  filter(str_detect(agency_name, "ENVIRONMENT") | str_detect(agency_name, "AGRICULTURE")) |>
+  count(agency_name)
+
+#Commerce
+industry_data_commerce <- md_payments |>
+  filter(str_detect(agency_name, "COMMERCE") | str_detect(agency_name, "COMPTROLLER")) |>
+  group_by(fiscal_year) |>
+  summarise(total_commerce = sum(amount))
+
+md_payments |>
+  filter(str_detect(agency_name, "COMMERCE") | str_detect(agency_name, "COMPTROLLER")) |>
+  count(agency_name)
+
+#Transportation
+industry_data_transportation <- md_payments |>
+  filter(str_detect(agency_name, "HIGH") | str_detect(agency_name, "TRANS") | str_detect(agency_name, "MDOT")) |>
+  group_by(fiscal_year) |>
+  summarise(total_transportation = sum(amount))
+
+md_payments |>
+  filter(str_detect(agency_name, "HIGH") | str_detect(agency_name, "TRANS") | str_detect(agency_name, "MDOT")) |>
+  count(agency_name)
+
+#combine them all
+all_industry_data <- industry_data_commerce |>
+    inner_join(industry_data_crime, by = 'fiscal_year') |>
+    inner_join(industry_data_education, by = 'fiscal_year') |>
+    inner_join(industry_data_environment, by = 'fiscal_year') |>
+    inner_join(industry_data_health, by = 'fiscal_year') |>
+    inner_join(industry_data_housing, by = 'fiscal_year') |>
+    inner_join(industry_data_labor, by = 'fiscal_year') |>
+    inner_join(industry_data_transportation, by = 'fiscal_year')
+```
+
+### Question 3: What counties or zip codes receive the most money?
+
+```{r}
+#Getting acs data on ZCTA
+md_zip_population <- get_acs(geography = "zcta",
+              variables = c(population = "B01001_001"),
+              year = 2019,
+              state = "MD")
+
+# Filtering md_payments to match the ZCTA data
+md_payments_2019 <- md_payments |>
+  filter(fiscal_year=="2019")|>
+  group_by(vendor_zip)|>
+  summarize(amount=sum(amount))|>
+  arrange(desc(amount))
+
+# Joining the md_payments with ZCTA data
+md_payments_2019 <- md_payments_2019 |>
+  inner_join(md_zip_population, by=c('vendor_zip'='GEOID'))
+
+md_payments_2019 <- md_payments_2019 |>
+  mutate(rate = estimate/amount*100)
 
 ```
 
-### Sentence 2
-
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+### Question 4: Where are lower payments going compared to higher one?
 
 ```{r}
-# Put code to reverse engineer sentence here
- private_enrollment_by_grade |>
-  group_by(state) |>
-  arrange(desc(enrollment))
-# Display results of code below this codeblock
 
 ```
 
-### Sentence 3
-
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+### Question 5: What types of payments are going to education? Are there differences in which systems recieve more/less money
 
 ```{r}
-# Put code to reverse engineer sentence here
-
-# Display results of code below this codeblock
 
 ```
-
-### Sentence 4
-
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
-
-```{r}
-# Put code to reverse engineer sentence here
-enrollment_changes |>
-  group_by(enrollment_type) |>
-  filter(enrollment_type == 'Private enrollment') |>
-  filter(state_abbrev == 'CA' | state_abbrev == 'NY' | state_abbrev == 'LA' | state_abbrev == 'NC' | state_abbrev == 'WA' | state_abbrev == 'CO' | state_abbrev == 'GA' | state_abbrev == 'MN' | state_abbrev == 'WI' | state_abbrev == 'NH' | state_abbrev == 'MA' | state_abbrev == 'MT' | state_abbrev == 'DE' | state_abbrev == 'ND' | state_abbrev == 'DC' | state_abbrev == 'SD' | state_abbrev == 'SC' | state_abbrev == 'NE' | state_abbrev == 'RI' | state_abbrev == 'TN' | state_abbrev == 'PA' | state_abbrev == 'FL') |>
-  mutate(private_year_19_20 = sum(school_year_2019_20)) |>   
-  mutate(private_year_20_21 = sum(school_year_2020_2021)) |>
-  mutate(private_year_21_22 = sum(school_year_2021_22)) |>
-  mutate(total_private_change = private_year_21_22 - private_year_19_20) |> 
-  summarize(sum(total_change))
-  
-
-enrollment_changes |>
-  group_by(enrollment_type) |>
-  filter(enrollment_type == 'Homeschool enrollment') |>
-  filter(state_abbrev == 'CA' | state_abbrev == 'NY' | state_abbrev == 'LA' | state_abbrev == 'NC' | state_abbrev == 'WA' | state_abbrev == 'CO' | state_abbrev == 'GA' | state_abbrev == 'MN' | state_abbrev == 'WI' | state_abbrev == 'NH' | state_abbrev == 'MA' | state_abbrev == 'MT' | state_abbrev == 'DE' | state_abbrev == 'ND' | state_abbrev == 'DC' | state_abbrev == 'SD' | state_abbrev == 'SC' | state_abbrev == 'NE' | state_abbrev == 'RI' | state_abbrev == 'TN' | state_abbrev == 'PA' | state_abbrev == 'FL') |>
-  mutate(homeschool_year_19_20 = sum(school_year_2019_20)) |>   
-  mutate(homeschool_year_20_21 = sum(school_year_2020_2021)) |>
-  mutate(homeschool_year_21_22 = sum(school_year_2021_22)) |>
-  mutate(total_homeschool_change = homeschool_year_21_22 - homeschool_year_19_20) |> 
-  summarize(sum(total_change))
-
-# Display results of code below this codeblock
-
-```
-
-### Sentence 5
-
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
-
-```{r}
-# Put code to reverse engineer sentence here
-
-# Display results of code below this codeblock
-
-```
-
--30-
