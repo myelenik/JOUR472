@@ -16,6 +16,10 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Final Memo:
+
+<https://docs.google.com/document/d/1vuWVdxadr3vkaMscE1J1PEoXGK0wOcMGYuDBGT9dZ0E/edit>
+
 ## Load libraries
 
 Loading required libraries for this analysis.
