@@ -94,7 +94,7 @@ payments_minus_2023_24 |>
 
 ```{r}
 
-#We chose not to combine the count of agencies with the industry data as to visibily see the different agencies that were included in each str_detect. This allowed us to view what was counted and have a more reliable and understood dataset.
+#We chose not to combine the count of agencies with the industry data to visibly see the different agencies that were included in each str_detect. This allowed us to view what was counted and have a more reliable and understandable dataset.
 
 #Health
 industry_data_health <- md_payments |>
